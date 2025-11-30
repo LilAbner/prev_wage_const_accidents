@@ -1,6 +1,7 @@
 
 #-------------Affordability Areas----------
-# Purpose: 
+# Purpose: Use spatial packages to indicate which BBLS 
+#  are in the  Zone A and Zone B affordability areas
 #---------------Packages-----------------
 library(ggspatial)
 library(sf)
@@ -11,7 +12,6 @@ library(arcgis)
 #will also need arcgislayers
 
 
-
 #--------------Upload Maps of NYC -----------
 
 
@@ -19,7 +19,7 @@ library(arcgis)
 nyc_map <- "https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/arcgis/rest/services/MAPPLUTO/FeatureServer/0"
 nyc_map <- arcgislayers::arc_open(nyc_map) 
 
-# 2020 NTAs (Needed to demarcate Zone A and B, and NTAs are not in Pluto)
+# 2020 NTAs (Needed to demarcate Zone A and B, and NTA2020s are not in Pluto)
 nta_map <- "https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/arcgis/rest/services/NYC_Neighborhood_Tabulation_Areas_2020/FeatureServer/0" 
 nta_map <- arcgislayers::arc_open(nta_map)
 
@@ -127,7 +127,7 @@ nyc_map_combined <- nyc_map %>%
 
 
 nyc_map_combined %>%
-  st_drop_geometry() %>%
+  st_drop_geometry() %>% #don't need geometry 
   write_csv("bbls_affordability_zones.csv")
 
 
