@@ -1,7 +1,8 @@
 
 #-------------Affordability Areas----------
 # Purpose: Use spatial packages to indicate which BBLS 
-#  are in the  Zone A and Zone B affordability areas
+#  are in the  Zone A and Zone B affordability areas, 
+# it seems that the enhanced affordability areas of 421a map closely to the Zone A and Zone B affordability areas, so use those as well!
 #---------------Packages-----------------
 library(ggspatial)
 library(sf)
@@ -107,6 +108,8 @@ nta_map <- nta_map %>%
   #create relevant dummys
   mutate(zone_a = ifelse(NTA2020 %in% zone_a, 1, 0),
          zone_b = ifelse(NTA2020 %in% zone_b, 1, 0),
+         brooklyn_enhanced = ifelse(NTA2020 %in% c("BK0101","BK0102", "BK0103" , "BK0104"), 1, 0),
+         queens_enhanced = ifelse(NTA2020 %in%  c('QN0201', 'QN0105', 'QN0102'), 1, 0),# this overstates the affordability area but not much development happens one the queens side 
          prev_wage = ifelse(NTA2020 %in% combined, 1, 0)) 
 
 #----------------Combine Affordability Areas with BBL File-------------
@@ -118,8 +121,10 @@ nyc_map_combined <- nyc_map %>%
   st_join(nta_map, left = T) %>%
   mutate(across(c(man_zone_a:prev_wage), ~ ifelse(is.na(.), 0, .)),
          zone_a = if_else(zone_a == 1 | man_zone_a == 1, 1,0,  missing  = 0),
-         prev_wage = if_else(zone_a == 1 | prev_wage == 1, 1, 0, missing = 0)
+         prev_wage = if_else(zone_a == 1 | prev_wage == 1, 1, 0, missing = 0), 
+        
   )
+
 
 
 #-----------------------------Export BBLs--------
