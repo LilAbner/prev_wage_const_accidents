@@ -1,0 +1,53 @@
+---
+title: "Prevailing Wage and Construction Accidents"
+author: "Kaylie Abner"
+date: "2025-12-01"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Background
+
+- 421a/485x programs critical to workforce development and housing production in NYC
+- Prevailing wage requirement for certain buildings in certain geographies part of recent iterations of the tax incentive
+
+- Contested topic! 
+- Want to examine an under-discussed aspect of prevailing wage: worker safety
+
+
+## Research Question
+
+Do the prevailing wage requirements in 485X and 421a(16) have any impact on construction injuries/fatalities?
+
+
+## Datasources
+
+- Construction Incidents:
+-- Recent dataset available on OpenData 
+-- This only goes back to 2024. 
+
+ 
+## Slide with R Output
+
+```{r cars, echo = TRUE}
+summary(cars)
+```
+
+## Prevailing Wage Projects
+
+```{r Potential Wages}
+potential_485_x_bar_plot
+```
+## Projects on the edge of requiring Prevailing Wage
+
+```{r split_wage_plot}
+split_wage_plot
+```
+
+```{r Injuries}
+potential_485_x_injuries_plot
+```
+
