@@ -27,7 +27,10 @@ accident_data <- request("https://data.cityofnewyork.us/resource/bf97-mjsy.json"
   ) %>%
   req_perform() %>%
   resp_body_json(simplifyVector = TRUE) %>%
-  mutate(bbl = as.double(address_bbl)) %>%
+  mutate(bbl = as.double(address_bbl),
+         across(c(injury, fatality), as.double),
+         incident_date_mm_dd_yyyy = ymd_hms(incident_date_mm_dd_yyyy)
+  ) %>%
   filter(!is.na(bbl))
 
 
@@ -108,7 +111,6 @@ affordability_areas_count <- affordability_areas %>%
 is.Date(affordability_areas$incident_date_mm_dd_yyyy)
 
 accident_data %>%
-  mutate(incident_date_mm_dd_yyyy = ymd_hms(incident_date_mm_dd_yyyy)) %>%
   arrange(incident_date_mm_dd_yyyy) %>%
   select(incident_date_mm_dd_yyyy)
 
@@ -162,9 +164,6 @@ check <- affordability_areas %>%
 
 
 ##------------------------------Counts--------------------
-affordability_areas <- affordability_areas %>%
-  mutate(across(c(injury, fatality), as.double),
-         incident_date_mm_dd_yyyy = ymd_hms(incident_date_mm_dd_yyyy)) 
 
 
 four21a_accidents <- affordability_areas %>%
