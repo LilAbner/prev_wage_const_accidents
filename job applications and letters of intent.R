@@ -27,16 +27,18 @@ library(httr2)
 dob_now_job_applications <- request("https://data.cityofnewyork.us/resource/w9ak-ipjd.json") %>%
   req_url_query(
     `$select` = "bbl, job_filing_number, job_type, filing_date, approved_date, proposed_dwelling_units",
-    `$limit` = 5000000
+    `$limit` = 5000000,
+    `$where` = "job_type  in ('New Building', 'ALT-CO - New Building with Existing Elements to Remain')"
   ) %>%
   req_perform() %>%
   resp_body_json(simplifyVector = TRUE)
 
-
+''
 dob_job_applications <- request("https://data.cityofnewyork.us/resource/ic3t-wcy2.json") %>%
   req_url_query(
     `$select` = "borough, block, lot, job__, doc__, job_type, proposed_dwelling_units, pre__filing_date, fully_permitted, withdrawal_flag",
-    `$limit` = 5000000
+    `$limit` = 5000000,
+    `$where` = "job_type in ('NB')"
   ) %>%
   req_perform() %>%
   resp_body_json(simplifyVector = TRUE)
@@ -100,7 +102,7 @@ dob_job_applications_clean <- dob_job_applications %>%
          ) %>%
   filter(filing_date_clean >= "2014-01-01" #interested in buildings built after 421a(16 passed), assume permits filed ~ two years below passage
          & doc__ == 1  #take only first job application for each project
-         & job_type == "NB") %>% #only intereseted in New Buildings 
+         ) %>% 
   select(bbl, filing_date_clean, proposed_dwelling_units, fully_permitted, withdrawal_flag, job_number = job__)
 
 
@@ -108,8 +110,8 @@ dob_now_job_applications_clean <-dob_now_job_applications %>%
   mutate(filing_date_clean = as_date(ymd_hms(filing_date)),
          doc__ = str_sub(job_filing_number, start = -2), #get the document number
          bbl = as.numeric(bbl)) %>%
-  filter(doc__ == "I1" & # get the main document instead of secondary applications
-           job_type %in% c("New Building", "ALT-CO - New Building with Existing Elements to Remain")) %>% #keep New Buildings only
+  filter(doc__ == "I1"  # get the main document instead of secondary applications
+           ) %>% 
   select(bbl, filing_date_clean, proposed_dwelling_units, approved_date, job_number = job_filing_number)
 
 # Combine Both Systems
