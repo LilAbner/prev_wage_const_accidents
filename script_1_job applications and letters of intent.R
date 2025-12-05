@@ -26,7 +26,7 @@ library(httr2)
 
 dob_now_job_applications <- request("https://data.cityofnewyork.us/resource/w9ak-ipjd.json") %>%
   req_url_query(
-    `$select` = "bbl, job_filing_number, job_type, filing_date, approved_date, proposed_dwelling_units",
+    `$select` = "bbl, job_filing_number, job_type, filing_date, approved_date, first_permit_date, proposed_dwelling_units",
     `$limit` = 5000000,
     `$where` = "job_type  in ('New Building', 'ALT-CO - New Building with Existing Elements to Remain')"
   ) %>%
@@ -112,11 +112,14 @@ dob_now_job_applications_clean <-dob_now_job_applications %>%
          bbl = as.numeric(bbl)) %>%
   filter(doc__ == "I1"  # get the main document instead of secondary applications
            ) %>% 
-  select(bbl, filing_date_clean, proposed_dwelling_units, approved_date, job_number = job_filing_number)
+  select(bbl, filing_date_clean, proposed_dwelling_units, approved_date, job_number = job_filing_number,
+         fully_permitted = first_permit_date)
 
 # Combine Both Systems
 job_applications <- bind_rows(dob_now_job_applications_clean, dob_job_applications_clean) %>%
-  filter(!is.na(bbl) & !is.na(filing_date_clean))
+  filter(!is.na(bbl) & !is.na(filing_date_clean)) %>%
+  group_by(bbl) %>%
+  slice_max(filing_date_clean, with_ties = F)
 
 #-----------------------485x and 421a-----------
 
